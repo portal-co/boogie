@@ -120,6 +120,7 @@ func (state State) Run(inputs map[string]string, cmd []string, outs []string) (s
 		if err != nil {
 			return "", err
 		}
+		defer hackpadfs.RemoveAll(state.Fs, t[1:])
 		for k, v := range ix {
 			// err := os.Symlink(path.Join(state.Main, v), path.Join(t, k))
 			err := remount.Clone(state.I, state.Fs, v, path.Join(t, k)[1:])
