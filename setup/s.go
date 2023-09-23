@@ -52,7 +52,17 @@ func (n CliSSH) Exec(d string, r []string, i sandbox.Stdio) error {
 	}
 	return s.Run(c)
 }
-
+func SetupLocal() (sandbox.Runner, error) {
+	// f, err := s.Fs()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	r, err := rpc.NewLocalApi()
+	if err != nil {
+		return nil, err
+	}
+	return sandbox.State{I: remount.I{r}, Main: "/ipfs", Io: sandbox.OS()}, nil
+}
 func SetupRpc(s SSH) (sandbox.Runner, error) {
 	f, err := s.Fs()
 	if err != nil {

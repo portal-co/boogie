@@ -6,13 +6,11 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"syscall"
 
 	rpc "github.com/arduino/arduino-cli/rpc/cc/arduino/cli/commands/v1"
 	"github.com/hack-pad/hackpadfs"
 	hos "github.com/hack-pad/hackpadfs/os"
 
-	"github.com/moby/sys/mountinfo"
 	"github.com/portal-co/remount"
 )
 
@@ -64,47 +62,56 @@ func (state State) Run(inputs map[string]string, cmd []string, outs []string) (s
 	l := []string{}
 	if state.Fs == nil {
 		for k, v := range ix {
-			err := os.Symlink(path.Join(state.Main, v), path.Join(t, k))
+			// err := os.Symlink(path.Join(state.Main, v), path.Join(t, k))
+			// if err != nil {
+			// 	return "", err
+			// }
+			// l = append(l, path.Join(t, k))
+			fmt.Println(v)
+			err := remount.Clone(state.I, hos.NewFS(), v, path.Join(t, k)[1:])
 			if err != nil {
-				return "", err
+				fmt.Println(err)
+				// return "", err
+				continue
 			}
+			fmt.Println("cloned", k)
 			l = append(l, path.Join(t, k))
 		}
-		u, err := os.MkdirTemp("/tmp", "prtl-sbox-8")
-		if err != nil {
-			return "", err
-		}
-		d := exec.Command("/usr/bin/env", "bindfs", "-f", "--resolve-symlinks", "-p", "a+Xx", t, u)
-		d.Stderr = os.Stderr
-		err = d.Start()
-		if err != nil {
-			err = fmt.Errorf("binding at %s at %w", u, err)
-			return "", err
-		}
-		defer func() {
-			err := d.Process.Signal(syscall.SIGINT)
-			if err != nil {
-				return
-			}
-			err = d.Wait()
-			if err != nil {
-				err = fmt.Errorf("binding at %s at %w", u, err)
-				return
-			}
-			// d := exec.Command("fusermount", "-u", u)
-			// d.Stderr = os.Stderr
-			// if err != nil {
-			// 	return
-			// }
-			// err = d.Run()
-		}()
-		b := false
-		for !b {
-			b, err = mountinfo.Mounted(u)
-			if err != nil {
-				return "", err
-			}
-		}
+		// u, err := os.MkdirTemp("/tmp", "prtl-sbox-8")
+		// if err != nil {
+		// 	return "", err
+		// }
+		// d := exec.Command("/usr/bin/env", "bindfs", "-f", "--resolve-symlinks", "-p", "a+Xx", t, u)
+		// d.Stderr = os.Stderr
+		// err = d.Start()
+		// if err != nil {
+		// 	err = fmt.Errorf("binding at %s at %w", u, err)
+		// 	return "", err
+		// }
+		// defer func() {
+		// 	err := d.Process.Signal(syscall.SIGINT)
+		// 	if err != nil {
+		// 		return
+		// 	}
+		// 	err = d.Wait()
+		// 	if err != nil {
+		// 		err = fmt.Errorf("binding at %s at %w", u, err)
+		// 		return
+		// 	}
+		// 	// d := exec.Command("fusermount", "-u", u)
+		// 	// d.Stderr = os.Stderr
+		// 	// if err != nil {
+		// 	// 	return
+		// 	// }
+		// 	// err = d.Run()
+		// }()
+		// b := false
+		// for !b {
+		// 	b, err = mountinfo.Mounted(u)
+		// 	if err != nil {
+		// 		return "", err
+		// 	}
+		// }
 		c := exec.Command(cmd[0], cmd[1:]...)
 		c.Stdout = state.Io.Stdout
 		c.Stderr = state.Io.Stderr
