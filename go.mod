@@ -2,7 +2,7 @@ module github.com/portal-co/boogie
 
 go 1.20
 
-require github.com/portal-co/remount v0.0.0-20230810155308-8da2516e4c1d
+require github.com/portal-co/remount v0.0.0-20230923180119-9d332f7df9d1
 
 require (
 	github.com/Jorropo/jsync v1.0.1 // indirect

@@ -67,14 +67,14 @@ func (state State) Run(inputs map[string]string, cmd []string, outs []string) (s
 			// 	return "", err
 			// }
 			// l = append(l, path.Join(t, k))
-			fmt.Println(v)
+			// fmt.Println(v)
 			err := remount.Clone(state.I, hos.NewFS(), v, path.Join(t, k)[1:])
 			if err != nil {
-				fmt.Println(err)
-				// return "", err
-				continue
+				// fmt.Println(err)
+				return "", err
+				// continue
 			}
-			fmt.Println("cloned", k)
+			// fmt.Println("cloned", k)
 			l = append(l, path.Join(t, k))
 		}
 		// u, err := os.MkdirTemp("/tmp", "prtl-sbox-8")
