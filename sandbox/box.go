@@ -121,7 +121,7 @@ func (state State) Run(inputs map[string]string, cmd []string, outs []string) (s
 		if err != nil {
 			return "", err
 		}
-		return remount.Push(state.I, hos.NewFS(), t[1:])
+		return state.I.Push(hos.NewFS(), t[1:])
 	} else {
 		err = hackpadfs.MkdirAll(state.Fs, t[1:], 0777)
 		if err != nil {
@@ -140,7 +140,7 @@ func (state State) Run(inputs map[string]string, cmd []string, outs []string) (s
 		if err != nil {
 			return "", err
 		}
-		return remount.Push(state.I, state.Fs, t[1:])
+		return state.I.Push(state.Fs, t[1:])
 	}
 }
 
