@@ -27,8 +27,13 @@ func OS() Stdio {
 	}
 }
 
+type PFS interface {
+	remount.Pusher
+	hackpadfs.FS
+}
+
 type State struct {
-	remount.I
+	I    PFS
 	Fs   hackpadfs.FS
 	Exec func(string, []string, Stdio) error
 	Main string
@@ -48,7 +53,7 @@ func (state State) IpfsPath() string {
 	return state.Main
 }
 
-func (state State) Ipfs() remount.I {
+func (state State) Ipfs() PFS {
 	return state.I
 }
 
@@ -146,7 +151,7 @@ func (state State) Run(inputs map[string]string, cmd []string, outs []string) (s
 
 type Runner interface {
 	Run(inputs map[string]string, cmd []string, outs []string) (string, error)
-	Ipfs() remount.I
+	Ipfs() PFS
 	IpfsPath() string
 	IO() Stdio
 	WithIO(x Stdio) Runner
@@ -211,7 +216,7 @@ func (r Ramp[T]) Run(inputs map[string]string, cmd []string, outs []string) (str
 		return "", C(errs)
 	}
 }
-func (r Ramp[T]) Ipfs() remount.I {
+func (r Ramp[T]) Ipfs() PFS {
 	var defaul T
 	return r[defaul].Ipfs()
 }
