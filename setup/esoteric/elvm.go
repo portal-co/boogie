@@ -31,17 +31,17 @@ func (e ELVM) CC(r sandbox.Runner, src string, hdrs []string, flags []string) (s
 		d[h] = h
 		m = append(m, "-isystem", "./"+h)
 	}
-	s, err := r.Run(d, m, []string{})
+	s, err := r.Run(d, m, []string{}, "/target.eir")
 	if err != nil {
 		return "", err
 	}
-	d = map[string]string{"elc": e.Elc, "target.eir": s + "/target.eir"}
+	d = map[string]string{"elc": e.Elc, "target.eir": s}
 	m = []string{"./elc", "./target.eir", "-target", e.Target, "-o", "./target"}
-	s, err = r.Run(d, m, []string{})
+	s, err = r.Run(d, m, []string{}, "/target")
 	if err != nil {
 		return "", err
 	}
-	return s + "/target", nil
+	return s, nil
 }
 
 var ErrElvmLib = fmt.Errorf("libraries are not supported in elvm")

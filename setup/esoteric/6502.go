@@ -30,8 +30,8 @@ func (mos Mos) CXX(r sandbox.Runner, src string, hdrs []string, flags []string) 
 		d[h] = h
 		m = append(m, "-isystem", "./"+h)
 	}
-	s, err := r.Run(d, m, []string{})
-	return s + "/target.o", err
+	s, err := r.Run(d, m, []string{}, "/target.o")
+	return s, err
 }
 
 // CC implements cc.CC.
@@ -54,8 +54,8 @@ func (mos Mos) CC(r sandbox.Runner, src string, hdrs []string, flags []string) (
 		d[h] = h
 		m = append(m, "-isystem", "./"+h)
 	}
-	s, err := r.Run(d, m, []string{})
-	return s + "/target.o", err
+	s, err := r.Run(d, m, []string{}, "/target.o")
+	return s, err
 }
 
 // Link implements cc.CC.
@@ -69,8 +69,8 @@ func (mos Mos) Link(r sandbox.Runner, libs []string, objs []string) (string, err
 		d[o+".o"] = o
 		m = append(m, "./"+o+".o")
 	}
-	s, err := r.Run(d, m, []string{})
-	return s + "/target", err
+	s, err := r.Run(d, m, []string{}, "/target")
+	return s, err
 }
 
 var _ cc.CXX = Mos{}
